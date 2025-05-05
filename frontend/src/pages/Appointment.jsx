@@ -149,6 +149,42 @@ const Appointment = () => {
                         <button className='py-0.5 px-2 border text-xs rounded-full'>{docInfo.experience}</button>
                     </div>
 
+                    {/* Rating Display */}
+                    {docInfo.averageRating && (
+                        <div className="flex items-center gap-2 mt-2">
+                            <div className="flex">
+                                {[1, 2, 3, 4, 5].map((star) => {
+                                    const rating = Math.round(docInfo.averageRating);
+                                    let starColor = 'text-gray-300'; // Default gray
+                                    
+                                    if (star <= rating) {
+                                        if (rating <= 2) {
+                                            starColor = 'text-red-500'; // Red for 1-2 stars
+                                        } else if (rating <= 3) {
+                                            starColor = 'text-orange-500'; // Orange for 3 stars
+                                        } else if (rating <= 4) {
+                                            starColor = 'text-yellow-400'; // Yellow for 4 stars
+                                        } else {
+                                            starColor = 'text-green-500'; // Green for 5 stars
+                                        }
+                                    }
+                                    
+                                    return (
+                                        <span
+                                            key={star}
+                                            className={`text-xl ${starColor}`}
+                                        >
+                                            ★
+                                        </span>
+                                    );
+                                })}
+                            </div>
+                            <span className="text-sm text-gray-600">
+                                {docInfo.averageRating} ({docInfo.totalRatings} reviews)
+                            </span>
+                        </div>
+                    )}
+
                     {/* ----- Doc About ----- */}
                     <div>
                         <p className='flex items-center gap-1 text-sm font-medium text-[#262626] mt-3'>About <img className='w-3' src={assets.info_icon} alt="" /></p>
