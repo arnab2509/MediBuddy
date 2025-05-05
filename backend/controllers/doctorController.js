@@ -91,15 +91,33 @@ const appointmentComplete = async (req, res) => {
 // API to get all doctors list for Frontend
 const doctorList = async (req, res) => {
     try {
-
         const doctors = await doctorModel.find({}).select(['-password', '-email'])
-        res.json({ success: true, doctors })
+        
+        // Get average ratings for each doctor
+        const doctorsWithRatings = await Promise.all(doctors.map(async (doctor) => {
+            const completedAppointments = await appointmentModel.find({
+                docId: doctor._id,
+                isCompleted: true,
+                rating: { $exists: true, $ne: null }
+            })
+            
+            const totalRatings = completedAppointments.reduce((sum, app) => sum + app.rating, 0)
+            const averageRating = completedAppointments.length > 0 
+                ? (totalRatings / completedAppointments.length).toFixed(1)
+                : null
+            
+            return {
+                ...doctor.toObject(),
+                averageRating,
+                totalRatings: completedAppointments.length
+            }
+        }))
 
+        res.json({ success: true, doctors: doctorsWithRatings })
     } catch (error) {
         console.log(error)
         res.json({ success: false, message: error.message })
     }
-
 }
 
 // API to change doctor availablity for Admin and Doctor Panel

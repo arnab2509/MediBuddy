@@ -343,6 +343,33 @@ const verifyStripe = async (req, res) => {
 
 }
 
+// API to submit appointment rating
+const submitRating = async (req, res) => {
+    try {
+        const { appointmentId, rating } = req.body;
+        const appointment = await appointmentModel.findById(appointmentId);
+
+        if (!appointment) {
+            return res.json({ success: false, message: 'Appointment not found' });
+        }
+
+        if (!appointment.isCompleted) {
+            return res.json({ success: false, message: 'Cannot rate incomplete appointments' });
+        }
+
+        if (appointment.rating) {
+            return res.json({ success: false, message: 'Appointment already rated' });
+        }
+
+        await appointmentModel.findByIdAndUpdate(appointmentId, { rating });
+        res.json({ success: true, message: 'Rating submitted successfully' });
+
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+}
+
 export {
     loginUser,
     registerUser,
@@ -354,5 +381,6 @@ export {
     paymentRazorpay,
     verifyRazorpay,
     paymentStripe,
-    verifyStripe
+    verifyStripe,
+    submitRating
 }

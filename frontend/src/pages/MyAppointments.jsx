@@ -14,6 +14,7 @@ const MyAppointments = () => {
     const [appointments, setAppointments] = useState([])
     const [payment, setPayment] = useState('')
     const [activeChatId, setActiveChatId] = useState(null)
+    const [hoveredRating, setHoveredRating] = useState(null)
 
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -26,10 +27,28 @@ const MyAppointments = () => {
     // Getting User Appointments Data Using API
     const getUserAppointments = async () => {
         try {
-
             const { data } = await axios.get(backendUrl + '/api/user/appointments', { headers: { token } })
             setAppointments(data.appointments.reverse())
+        } catch (error) {
+            console.log(error)
+            toast.error(error.message)
+        }
+    }
 
+    // Function to submit rating
+    const submitRating = async (appointmentId, rating) => {
+        try {
+            const { data } = await axios.post(
+                backendUrl + '/api/user/submit-rating',
+                { appointmentId, rating },
+                { headers: { token } }
+            )
+            if (data.success) {
+                toast.success(data.message)
+                getUserAppointments()
+            } else {
+                toast.error(data.message)
+            }
         } catch (error) {
             console.log(error)
             toast.error(error.message)
@@ -38,23 +57,18 @@ const MyAppointments = () => {
 
     // Function to cancel appointment Using API
     const cancelAppointment = async (appointmentId) => {
-
         try {
-
             const { data } = await axios.post(backendUrl + '/api/user/cancel-appointment', { appointmentId }, { headers: { token } })
-
             if (data.success) {
                 toast.success(data.message)
                 getUserAppointments()
             } else {
                 toast.error(data.message)
             }
-
         } catch (error) {
             console.log(error)
             toast.error(error.message)
         }
-
     }
 
     const initPay = (order) => {
@@ -149,6 +163,31 @@ const MyAppointments = () => {
                                 <p className=''>{item.docData.address.line1}</p>
                                 <p className=''>{item.docData.address.line2}</p>
                                 <p className=' mt-1'><span className='text-sm text-[#3C3C3C] font-medium'>Date & Time:</span> {slotDateFormat(item.slotDate)} |  {item.slotTime}</p>
+                                
+                                {/* Star Rating UI for completed appointments */}
+                                {item.isCompleted && (
+                                    <div className="mt-3">
+                                        <p className="text-sm text-[#3C3C3C] font-medium mb-1">
+                                            {item.rating ? 'Your Rating:' : 'Rate your experience:'}
+                                        </p>
+                                        <div className="flex gap-1">
+                                            {[1, 2, 3, 4, 5].map((star) => (
+                                                <button
+                                                    key={star}
+                                                    onClick={() => !item.rating && submitRating(item._id, star)}
+                                                    onMouseEnter={() => !item.rating && setHoveredRating(star)}
+                                                    onMouseLeave={() => !item.rating && setHoveredRating(null)}
+                                                    className="text-2xl focus:outline-none"
+                                                    disabled={item.rating}
+                                                >
+                                                    <span className={`${(hoveredRating || item.rating) >= star ? 'text-yellow-400' : 'text-gray-300'}`}>
+                                                        ★
+                                                    </span>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                             <div></div>
                             <div className='flex flex-col gap-2 justify-end text-sm text-center'>

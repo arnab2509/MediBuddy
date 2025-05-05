@@ -21,6 +21,42 @@ const TopDoctors = () => {
                             </div>
                             <p className='text-[#262626] text-lg font-medium'>{item.name}</p>
                             <p className='text-[#5C5C5C] text-sm'>{item.speciality}</p>
+                            
+                            {/* Rating Display */}
+                            {item.averageRating && (
+                                <div className="flex items-center gap-2 mt-2">
+                                    <div className="flex">
+                                        {[1, 2, 3, 4, 5].map((star) => {
+                                            const rating = Math.round(item.averageRating);
+                                            let starColor = 'text-gray-300'; // Default gray
+                                            
+                                            if (star <= rating) {
+                                                if (rating <= 2) {
+                                                    starColor = 'text-red-500'; // Red for 1-2 stars
+                                                } else if (rating <= 3) {
+                                                    starColor = 'text-orange-500'; // Orange for 3 stars
+                                                } else if (rating <= 4) {
+                                                    starColor = 'text-yellow-400'; // Yellow for 4 stars
+                                                } else {
+                                                    starColor = 'text-green-500'; // Green for 5 stars
+                                                }
+                                            }
+                                            
+                                            return (
+                                                <span
+                                                    key={star}
+                                                    className={`text-sm ${starColor}`}
+                                                >
+                                                    ★
+                                                </span>
+                                            );
+                                        })}
+                                    </div>
+                                    <span className="text-xs text-gray-600">
+                                        {item.averageRating} ({item.totalRatings})
+                                    </span>
+                                </div>
+                            )}
                         </div>
                     </div>
                 ))}
