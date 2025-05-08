@@ -236,7 +236,7 @@ const Doctors = () => {
                       <span className="font-medium">{item.experience}</span> experience
                     </div>
                     <div className="text-sm font-medium text-primary">
-                      ${item.fees}
+                      Rs.{item.fees}
                     </div>
                   </div>
                 </div>
