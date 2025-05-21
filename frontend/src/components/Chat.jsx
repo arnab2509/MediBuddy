@@ -47,7 +47,7 @@ const Chat = ({ appointmentId, userId, docId, backendUrl, token, otherUserName, 
 
   // Scroll to bottom when messages change
   useEffect(() => {
-    scrollToBottom();
+    // scrollToBottom();
   }, [messages]);
 
   // Function to send text message

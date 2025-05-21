@@ -47,7 +47,7 @@ const DoctorChat = ({ appointmentId, userId, docId, backendUrl, dToken, patientN
 
   // Scroll to bottom when messages change
   useEffect(() => {
-    scrollToBottom();
+    // scrollToBottom();
   }, [messages]);
 
   // Function to send text message
